@@ -1,0 +1,27 @@
+.recipes {
+
+    &__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        flex-wrap: wrap;
+
+        &-input {
+            display: flex;
+            align-items: center;
+
+            span {
+                top: unset;
+            }
+        }
+
+        &-count {
+            margin-left: auto;
+        }
+    }
+
+    &__paginator {
+        margin-top: 60px;
+    }
+}

@@ -1,0 +1,11 @@
+.error {
+  margin-top: 20px;
+  & > div {
+      width: 100%;
+      gap: 10px;
+      
+      span {
+          font-size: 18px;
+      }
+  }
+}
