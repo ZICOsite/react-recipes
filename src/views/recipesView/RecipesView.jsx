@@ -8,9 +8,8 @@ import { Paginator } from "primereact/paginator";
 import Error from "../../components/error/Error";
 import { useDebounce } from "primereact/hooks";
 import noFoodFound from "../../assets/img/empty.webp";
+import SkeletonCard from "../../components/skeleton/SkeletonCard";
 import "./recipesView.scss";
-
-const arr = Array(8).fill(0);
 
 const RecipesView = () => {
   const [recipes, setRecipes] = useState(null);
@@ -28,7 +27,22 @@ const RecipesView = () => {
     setLoading(true);
     try {
       const { data } = await recipesApi.getAllRecipes(
-        `/search?q=${keyword}&limit=12&skip=${offset}&select=name,image,rating,reviewCount,mealType,tags&delay=1000`
+        `?limit=12&skip=${offset}&select=name,image,rating,reviewCount,mealType,tags&delay=500`
+      );
+      setRecipes(data.recipes);
+    } catch (error) {
+      serError(error.message);
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSearchRecipes = async () => {
+    setLoading(true);
+    try {
+      const { data } = await recipesApi.getSearchRecipes(
+        `/search?q=${keyword}&limit=12&select=name,image,rating,reviewCount,mealType,tags&delay=500`
       );
       setRecipes(data.recipes);
       setTotal(data.total);
@@ -38,11 +52,15 @@ const RecipesView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     getAllRecipes(first);
-  }, [debouncedValue, first]);
+  }, [first]);
+
+  useEffect(() => {
+    getSearchRecipes();
+  }, [debouncedValue]);
 
   return (
     <section className="recipes">
@@ -64,7 +82,7 @@ const RecipesView = () => {
           </IconField>
         </div>
         {error && <Error message={error} />}
-        {!recipes?.length && !loading && (
+        {!total && !loading && (
           <div className="emptyImage">
             <img
               src={noFoodFound}
@@ -75,13 +93,12 @@ const RecipesView = () => {
           </div>
         )}
         <div className="recipes__cards cards">
-          {loading &&
-            arr.map((_, index) => <Card key={index} loading={loading} />)}
+          {loading && <SkeletonCard count={8} />}
           {recipes?.map((item) => (
             <Card key={item.id} info={item} loading={loading} />
           ))}
         </div>
-        {!error && !!total && total > 12 && (
+        {total > 12 && (
           <Paginator
             first={first}
             rows={12}

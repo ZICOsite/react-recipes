@@ -12,6 +12,9 @@ const recipesApi = {
   },
   getSingleRecipe(url) {
     return axiosInstanse.get(url);
+  },
+  getSearchRecipes(url) {
+    return axiosInstanse.get(url);
   }
 };
 
